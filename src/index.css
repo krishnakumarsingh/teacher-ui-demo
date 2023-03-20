@@ -11,3 +11,56 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+body {
+  background-color: #f9f8fd!important;
+}
+.teacher-compensation h2 {
+  padding: 25px 0;
+}
+.bg-blue {
+  background-color: #4640e0;
+  color: #fff;
+}
+
+.transparent,
+.transparent:hover,
+.transparent:focus:not(:focus-visible) {
+  background: transparent;
+  border: navajowhite;
+  color: #000;
+}
+
+/* =============================== */
+.wraper-icon {
+  padding: 10px;
+  background: #fff;
+  /* -webkit-filter: invert(100%);
+  filter: invert(100%); */
+  transition: color 1s;
+}
+
+.wraper-icon svg {
+  -webkit-filter: invert(100%);
+  filter: invert(100%);
+}
+
+/* ================================ */
+.form-control.gap-rit {
+  padding-right: 35px;
+}
+.pos-rit {
+  position: relative;
+  bottom: 32px;
+  left: 81%;
+}
+
+.icon-with-shadow,
+[class^="svg-"] {
+  color: #0d6efd;
+}
+.icon-with-shadow:hover {
+  filter: drop-shadow(2px 2px 0px #ccc);
+  cursor: pointer;
+}
