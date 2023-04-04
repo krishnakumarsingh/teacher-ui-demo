@@ -38,13 +38,21 @@ const TeacherCompensation = () => {
                     return -1;
                 }
             });
-            setPost(currentData.filter((item) => item.startRange > today));
-            setOldPost(currentData.filter((item) => item.startRange < today));
+            setPost(postDate(currentData, today));
+            setOldPost(pastDate(currentData, today));
         });
     }
+    const postDate = (currentData, today) => {
+        console.log(currentData, today)
+        return currentData.filter((item) => item.startRange > today)
+    };
+    const pastDate = (currentData, today) => currentData.filter((item) => item.startRange < today);
     const edit = () => {
         console.log("edit");
     }
+    useEffect(() => {
+        console.log(post);
+    }, [post]);
     if (!post) return null;
     return (
         <>
