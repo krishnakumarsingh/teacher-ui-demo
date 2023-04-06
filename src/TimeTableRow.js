@@ -1,54 +1,53 @@
+import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
-import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { left } from '@popperjs/core';
+import React, { useState } from 'react';
 // import { setBackgroundColor } from './helper';
 
 
-const TimeTableRow = ({ id, time, icon, title, type, sessionName, sessionTime, edit, refresh }) => {
-    // const bg = setBackgroundColor();
-    // const color = setBackgroundColor().color;
-    const [attendence, setAttendence] = useState("");
+const TimeTableRow = ({ id, time, startRange, icon, title, type, sessionName, sessionTime, edit, refresh, status, dateStatus, costPerHour }) => {
+    const [expend, setExpend] = useState(false);
     const deleteItem = async () => {
         const data = axios.delete(`http://localhost:3001/teacher-compensation/${id}`);
         refresh();
     }
-    const onChangeValue = (e) => {
-        setAttendence(e.target.value);
-    }
+    const costPerSession = (totalTime) => Math.floor((costPerHour/60) * totalTime);
     return (
-        <div className="row g-0 justify-content-between align-items-center mb-4 border-bottom p-2">
-            <div className="col-md-2 ">
-                {time}
-            </div>
-            <div className="col-md-1 ">
-                <span className={`wraper-icon`} style={{ backgroundColor: "#ccc", color: "#ccc"}} ><FontAwesomeIcon icon={icon} className="fa-1x" /></span>
-            </div>
-            <div className="col-md-5">
-                <div className="card-body p-0">
-                    <h5 className="card-title m-0">{title}</h5>
-                    <p className="card-text"><small className="text-muted">{type}</small></p>
+        <div className="time-table-row mb-4" onClick={() => setExpend(!expend)}>
+            <div className={`accordin-header row g-0 justify-content-between align-items-center p-2 ${status === "checked" ? "active" : dateStatus === "old" ? "skiped" : ""}`}>
+                <div className="col-md-1 ">
+                    <span className={`wraper-icon`} >
+                        <FontAwesomeIcon icon={faCalendarCheck} className="fa-2x fa-solid" />
+                    </span>
+                </div>
+                <div className="col-md-5">
+                    <div className="card-body p-0">
+                        <h5 className="card-title m-0">{title}</h5>
+                        <p className="card-text"><small className="text-muted">{type}</small></p>
+                    </div>
+                </div>
+                <div className='col-md-2 text-end'>
+                    <small>{"Duration"}</small> : <small className="text-muted">{sessionTime} Min</small>
+                </div>
+                <div className="col-md-4 text-end">
+                    <small><i>{"Cost"}</i></small><small className="text-muted"> : 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-currency-rupee" viewBox="0 0 16 16">
+                        <path d="M4 3.06h2.726c1.22 0 2.12.575 2.325 1.724H4v1.051h5.051C8.855 7.001 8 7.558 6.788 7.558H4v1.317L8.437 14h2.11L6.095 8.884h.855c2.316-.018 3.465-1.476 3.688-3.049H12V4.784h-1.345c-.08-.778-.357-1.335-.793-1.732H12V2H4v1.06Z"/>
+                    </svg> {costPerSession(sessionTime)}</small>
                 </div>
             </div>
-            <div className="col-md-2 text-center">
-                <div className="radio-button" onChange={(e) => onChangeValue(e)} style={{textAlign: left}}>
-                    <input type="radio" id="Skipped" value="Skipped" name="attendence" /><label htmlFor='Skipped'> Skipped</label><br/>
-                    <input type="radio" id="Absent" value="Absent" name="attendence" /><label htmlFor='Absent'> Absent</label><br/>
-                    <input type="radio" id="Present" value="Present" name="attendence" /><label htmlFor='Present'> Present</label><br/>
+            {expend && <div className='p-2 container' style={{borderTop: "1px solid #ccc"}}>
+                <div className='row p-2'>
+                    <div className='col-md-4 p-2'><dt>Name: </dt><dl>{title}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Status: </dt><dl>{status ? status : "NA"}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Duration: </dt><dl>{sessionTime}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Session Name: </dt><dl>{sessionName}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Date: </dt><dl>{startRange}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Time: </dt><dl>{time}</dl></div>
+                    <div className='col-md-4 p-2'><dt>cost Per Hour: </dt><dl>{costPerHour}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Total cost: </dt><dl>{costPerSession(sessionTime)}</dl></div>
                 </div>
-                {/* <span className='icon-with-shadow'>
-                    <FontAwesomeIcon icon={faPencil} className="fa-1x" onClick={() => edit()} />
-                </span>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <span className='icon-with-shadow'>
-                    <FontAwesomeIcon icon={faTrash} className="fa-1x" onClick={() => deleteItem()} />
-                </span> */}
-            </div>
-            <div className='col-md-2 text-end'>
-                <dt>{sessionName}</dt>
-                <dl><small className="text-muted">{sessionTime}</small></dl>
-            </div>
+            </div>}
         </div>
     )
 }

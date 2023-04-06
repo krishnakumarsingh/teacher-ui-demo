@@ -41,10 +41,10 @@ body {
   transition: color 1s;
 }
 
-.wraper-icon svg {
+/* .wraper-icon svg {
   -webkit-filter: invert(100%);
   filter: invert(100%);
-}
+} */
 
 /* ================================ */
 .form-control.gap-rit {
@@ -79,4 +79,36 @@ body {
 }      
 .radio-button input[type="radio"]:checked+label {
   background-color: #76cf9f;
+}
+
+.time-table-row {
+  border: 1px solid #cccccc6b;
+  border-radius: 5px 0 0 5px;
+  cursor: pointer;
+}
+
+.time-table-row .accordin-header:hover {
+  box-shadow: 0px 3px 5px 2px #ccc;
+}
+.time-table-row dl {
+  margin-bottom: 0;
+}
+.time-table-row .active {
+  border-right: 4px solid rgb(17, 136, 17);
+}
+
+.time-table-row .active .wraper-icon svg {
+  color:rgb(17, 136, 17)
+}
+
+.time-table-row .skiped {
+  border-right: 4px solid rgb(190, 17, 17);
+}
+
+.time-table-row .skiped .wraper-icon svg {
+  color:rgb(190, 17, 17);
+}
+
+.old-timeline h5 [class^="svg-"]{
+  color: #ccc;
 }

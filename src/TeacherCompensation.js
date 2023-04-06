@@ -1,4 +1,4 @@
-import { faCalendarCheck, faCalendarPlus, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import Moment from 'moment';
@@ -8,9 +8,11 @@ import FormComponent from "./FormComponent";
 import TimeTableRow from './TimeTableRow';
 
 const TeacherCompensation = () => {
-    const [post, setPost] = useState(null);
-    const [oldPost, setOldPost] = useState(null);
+    const [post, setPost] = useState([]);
+    const [oldPost, setOldPost] = useState([]);
     const [addTimeTable, setAddTimeTable] = useState(false);
+    const [filterOpen, setFilterOpen] = useState(false);
+    const [totalCost, setTotalCost] = useState(0);
 
     const handleClose = () => setAddTimeTable(false);
     const handleSave = () => console.log("Save");
@@ -38,22 +40,23 @@ const TeacherCompensation = () => {
                     return -1;
                 }
             });
-            setPost(postDate(currentData, today));
-            setOldPost(pastDate(currentData, today));
+            setPost(currentData.filter((item) => item.startRange > today));
+            setOldPost(currentData.filter((item) => item.startRange < today));
         });
     }
-    const postDate = (currentData, today) => {
-        console.log(currentData, today)
-        return currentData.filter((item) => item.startRange > today)
-    };
-    const pastDate = (currentData, today) => currentData.filter((item) => item.startRange < today);
+    useEffect(() => {
+        if(post.length > 0) {
+            let currentValue = 0;
+            oldPost.forEach(item => {
+                const costPerSession = () => Math.floor((item.costPerHour/60) * item.sessionTime);
+                if(item.status === "checked") currentValue = currentValue + costPerSession();
+            });
+            setTotalCost(currentValue);
+        }
+    }, [post]);
     const edit = () => {
         console.log("edit");
     }
-    useEffect(() => {
-        console.log(post);
-    }, [post]);
-    if (!post) return null;
     return (
         <>
             <div className="teacher-compensation">{console.log(post)}
@@ -69,50 +72,44 @@ const TeacherCompensation = () => {
                                     <div className="d-flex justify-content-between align-items-center">
                                         <h2>Session calender</h2>
                                         <div className="dropdown">
-                                            <Button className="btn btn-secondary btn-sm dropdown-toggle transparent" type="button" data-bs-toggle="dropdown"
-                                                aria-expanded="false">
+                                            <Button className="btn btn-secondary btn-sm dropdown-toggle transparent" onClick={() => setFilterOpen(!filterOpen)}>
                                                 Filter Calender
                                             </Button>
-                                            <ul className="dropdown-menu">
+                                            <ul className="dropdown-menu" style={{display: filterOpen ? "block" : "none"}}>
                                                 <li><a className="dropdown-item" href="#">Completed session</a></li>
                                                 <li><a className="dropdown-item" href="#">Today session</a></li>
                                                 <li><a className="dropdown-item" href="#">Feature session</a></li>
                                             </ul>
                                         </div>
                                     </div>
-                                    {post.length > 0 ? <div>
+                                    {post.length > 0 && <div className='new-timeline'>
                                         <div className="card mb-3 border-0">
                                             <div className="d-flex justify-content-between align-items-center mb-4">
-                                                <h3>Timetable</h3>
-                                                {/* <div className="dropdown">
-                                                    <Button className="btn btn-outline-secondary btn-sm" variant="outline-secondary" onClick={() => setAddTimeTable(!addTimeTable)}>Add Session{" "}<FontAwesomeIcon icon={faCalendarPlus} className="fa-1x" /></Button>
-                                                </div> */}
+                                                <h3>Schedule</h3>
+                                                <h6>Total Cost: 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-currency-rupee" viewBox="0 0 16 16">
+                                                        <path d="M4 3.06h2.726c1.22 0 2.12.575 2.325 1.724H4v1.051h5.051C8.855 7.001 8 7.558 6.788 7.558H4v1.317L8.437 14h2.11L6.095 8.884h.855c2.316-.018 3.465-1.476 3.688-3.049H12V4.784h-1.345c-.08-.778-.357-1.335-.793-1.732H12V2H4v1.06Z"/>
+                                                    </svg> 
+                                                    {totalCost}/-</h6>
                                             </div>
                                             {post && post.map(item => {
-                                                return <TimeTableBlock data={item} edit={edit} refresh={refresh} />
-                                            })}
-                                        </div>
-                                        <div className="card mb-3 border-0">
-                                            <div className="d-flex justify-content-between align-items-center mb-4">
-                                                <h3>Old Timetable</h3>
-                                            </div>
-                                            {oldPost && oldPost.map(item => {
-                                                return <TimeTableBlock data={item} />
-                                            })}
-                                        </div>
-                                    </div> : <h1>No Timetable</h1>}
-                                    {oldPost.length > 0 && <div>
-                                        <div className="card mb-3 border-0">
-                                            <div className="d-flex justify-content-between align-items-center mb-4">
-                                                <h3>Old Timetable</h3>
-                                            </div>
-                                            {oldPost && oldPost.map(item => {
-                                                return <TimeTableBlock data={item} />
+                                                return <TimeTableBlock data={item} dateStatus="new" />
                                             })}
                                         </div>
                                     </div>}
                                 </div>
                             </div>
+                            {oldPost.length > 0 && <div className='old-timeline'>
+                                {oldPost && oldPost.map(item => {
+                                    return (
+                                        <div className="card mt-1 mb-2 border-0">
+                                            <div className="card-body">
+                                                <TimeTableBlock data={item} dateStatus="old" />
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>}
                         </div>
                         <div className="col-md-4">
                             <div className="card mt-5 mb-5 border-0">
@@ -127,33 +124,17 @@ const TeacherCompensation = () => {
         </>
     );
 }
-const TimeTableBlock = ({ data, edit, refresh }) => {
-    const { id, startRange, endRange, time, title, type, sessionName, sessionTime } = data;
+const TimeTableBlock = ({ data, edit, refresh, dateStatus }) => {
+    const { id, startRange, endRange, time, title, type, sessionName, sessionTime, status, costPerHour } = data;
     const formateDate = (date) => {
-        const newDate = Moment(new Date()).format('DD-MM-YYYY');
-        const dbDate = Moment(date).format('DD-MM-YYYY');
+        const currentDate = Moment(date).format('MMMM Do YYYY, h:mm A');
 
-        const dbYears = dbDate.split("-")[2];
-        const dbMonths = dbDate.split("-")[1];
-        const dbDays = dbDate.split("-")[0];
-
-        const newYears = newDate.split("-")[2];
-        const newMonths = newDate.split("-")[1];
-        const newDays = newDate.split("-")[0];
-
-        let dayText = "";
-        if (newDate === dbDate) {
-            dayText = `Today`
-        } else if (dbYears === newYears && dbMonths === newMonths && dbDays === String(Number(newDays) + 1)) {
-            dayText = `Tomorrow`
-        }
-        return `${dayText} ${dbDays}.${dbMonths}`
-
+        return `${currentDate}`;
     }
     return (
         <div>
-            <h5><FontAwesomeIcon icon={faCalendarCheck} className="fa-1x" /> {formateDate(startRange)}</h5>
-            <TimeTableRow id={id} refresh={refresh} time={time} icon={faClock} title={title} type={`Lecturer: ${type}`} sessionName={sessionName} sessionTime={sessionTime} edit={edit} />
+            <h5><FontAwesomeIcon icon={faCalendarDay} className="fa-1x" /> {formateDate(startRange)}</h5>
+            <TimeTableRow id={id} refresh={refresh} startRange={startRange} time={time} icon={faClock} title={title} type={`Lecturer: ${type}`} sessionName={sessionName} sessionTime={sessionTime} edit={edit} status={status} dateStatus={dateStatus} costPerHour={costPerHour} />
         </div>
     )
 }
