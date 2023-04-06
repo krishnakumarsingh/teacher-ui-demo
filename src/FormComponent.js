@@ -4,12 +4,6 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Moment from 'moment';
-// "date": "2023-03-10T18:35:31.225Z",
-//       "time": "12.00 PM",
-//       "title": "Card title",
-//       "type": "Roshan",
-//       "sessionName": "Lesson 4",
-//       "sessionTime": "30min"
 const FormComponent = ({ submit, refresh }) => {
     const [selectionRange, setSelectionRange] = useState("single");
     const [title, setTitle] = useState("");
@@ -86,9 +80,6 @@ const FormComponent = ({ submit, refresh }) => {
             <Form.Group className="mb-3" controlId="title">
                 <Form.Label>Title *</Form.Label>
                 <Form.Control type="text" placeholder="Enter Title" onChange={(e) => setTitle(e.target.value)} />
-                {/* <Form.Text className="text-muted">
-                    We'll never share your email with anyone else.
-                </Form.Text> */}
             </Form.Group>
             <Form.Group className="mb-3" controlId="selectionRange">
                 <Form.Check type="checkbox" label="Single Day" value="single" checked={selectionRange === "single"} onChange={() => setSelectionRange("single")} />
@@ -119,9 +110,6 @@ const FormComponent = ({ submit, refresh }) => {
             <Form.Group className="mb-3" controlId="sessionName">
                 <Form.Label>Session Name *</Form.Label>
                 <Form.Control type="text" placeholder="Enter Session Name" onChange={(e) => setSessionName(e.target.value)} />
-                {/* <Form.Text className="text-muted">
-                    We'll never share your email with anyone else.
-                </Form.Text> */}
             </Form.Group>
 
             <Form.Group className="col-md-6 mb-3" controlId="sessionTime">

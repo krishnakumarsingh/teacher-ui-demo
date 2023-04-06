@@ -6,11 +6,15 @@ import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FormComponent from "./FormComponent";
 import TimeTableRow from './TimeTableRow';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
 const TeacherCompensation = () => {
     const [post, setPost] = useState([]);
     const [oldPost, setOldPost] = useState([]);
     const [addTimeTable, setAddTimeTable] = useState(false);
+    const [filterValue, setFilterValue] = useState("all");
     const [filterOpen, setFilterOpen] = useState(false);
     const [totalCost, setTotalCost] = useState(0);
 
@@ -57,6 +61,26 @@ const TeacherCompensation = () => {
     const edit = () => {
         console.log("edit");
     }
+
+const VariantsExample = () => {
+    return (
+      <>
+        <DropdownButton
+            as={ButtonGroup}
+            key={"Secondary"}
+            id={`dropdown-variants-${"Secondary"}`}
+            variant={"Secondary".toLowerCase()}
+            title={"Secondary"}
+        >
+            <Dropdown.Item eventKey="1" onClick={() => setFilterValue("all")} active={filterValue === "all"}>Completed Session</Dropdown.Item>
+            <Dropdown.Item eventKey="2" onClick={() => setFilterValue("today")} active={filterValue === "today"}>Today Session</Dropdown.Item>
+            <Dropdown.Item eventKey="3" onClick={() => setFilterValue("feature")} active={filterValue === "feature"}>Feature Session</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item eventKey="4" onClick={() => setFilterValue("currentMonth")} active={filterValue === "currentMonth"}>Current Month Session</Dropdown.Item>
+        </DropdownButton>
+      </>
+    );
+  }
     return (
         <>
             <div className="teacher-compensation">{console.log(post)}
@@ -67,21 +91,12 @@ const TeacherCompensation = () => {
                             <h5>Your students are doing greate 60% student has completed the test.</h5>
                         </div>
                         <div className="col-md-8">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <h2>Session calender</h2>
+                                <VariantsExample />
+                            </div>
                             <div className="card mt-5 mb-5 border-0">
                                 <div className="card-body">
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <h2>Session calender</h2>
-                                        <div className="dropdown">
-                                            <Button className="btn btn-secondary btn-sm dropdown-toggle transparent" onClick={() => setFilterOpen(!filterOpen)}>
-                                                Filter Calender
-                                            </Button>
-                                            <ul className="dropdown-menu" style={{display: filterOpen ? "block" : "none"}}>
-                                                <li><a className="dropdown-item" href="#">Completed session</a></li>
-                                                <li><a className="dropdown-item" href="#">Today session</a></li>
-                                                <li><a className="dropdown-item" href="#">Feature session</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
                                     {post.length > 0 && <div className='new-timeline'>
                                         <div className="card mb-3 border-0">
                                             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -93,7 +108,7 @@ const TeacherCompensation = () => {
                                                     {totalCost}/-</h6>
                                             </div>
                                             {post && post.map(item => {
-                                                return <TimeTableBlock data={item} dateStatus="new" />
+                                                return <TimeTableBlock data={item} dateStatus="new" filterValue={filterValue} />
                                             })}
                                         </div>
                                     </div>}
@@ -104,7 +119,7 @@ const TeacherCompensation = () => {
                                     return (
                                         <div className="card mt-1 mb-2 border-0">
                                             <div className="card-body">
-                                                <TimeTableBlock data={item} dateStatus="old" />
+                                                <TimeTableBlock data={item} dateStatus="old" filterValue={filterValue} />
                                             </div>
                                         </div>
                                     )
@@ -124,7 +139,7 @@ const TeacherCompensation = () => {
         </>
     );
 }
-const TimeTableBlock = ({ data, edit, refresh, dateStatus }) => {
+const TimeTableBlock = ({ data, edit, refresh, dateStatus, filterValue }) => {
     const { id, startRange, endRange, time, title, type, sessionName, sessionTime, status, costPerHour } = data;
     const formateDate = (date) => {
         const currentDate = Moment(date).format('MMMM Do YYYY, h:mm A');
@@ -138,4 +153,5 @@ const TimeTableBlock = ({ data, edit, refresh, dateStatus }) => {
         </div>
     )
 }
+                                    
 export default TeacherCompensation;
