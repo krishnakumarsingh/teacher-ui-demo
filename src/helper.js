@@ -1,16 +1,47 @@
-const getRandomNumber = (maxNum) => {
-  return Math.floor(Math.random() * maxNum);
+import axios from 'axios';
+
+const config = {
+  headers: {
+      'Content-Type': 'application/json'
+  }
 };
-const getRandomColor = () => {
-  const h = getRandomNumber(360);
-  const s = getRandomNumber(100);
-  const l = getRandomNumber(100);
-  return `hsl(${h}deg, ${s}%, ${l}%)`;
-};
-const setBackgroundColor = () => {
-  const randomColor = getRandomColor();
-  return randomColor;
-};
+const teacherCompensationGetApi = async () => await axios.get("http://localhost:3002/teacher-compensation");
+const teacherCompensationPostApi = async (fieldsData) => await axios.post("http://localhost:3002/teacher-compensation", fieldsData, config);
+const teacherCompensationDeleteApi = async (id) => await axios.delete(`http://localhost:3002/teacher-compensation/${id}`);
+const subjectCost = (name) => {
+  let cost = 0;
+  const subjectsName = ["English", "Maths", "Science", "Social Sciences", "Physical Education", "Computer Basics", "Arts"];
+  switch(name.toLowerCase()) {
+    case "english":
+      cost = 100;
+      break;
+    case "maths":
+      cost = 150;
+      break;
+    case "science":
+      cost = 200;
+      break;
+    case "social sciences":
+      cost = 100;
+      break;
+    case "physical education":
+      cost = 100;
+      break;
+    case "computer basics":
+      cost = 100;
+      break;
+    case "arts":
+      cost = 100;
+      break;
+    default:
+      cost = 50;
+  }
+  return cost;
+}
+
 export {
-    setBackgroundColor,
+    teacherCompensationGetApi,
+    teacherCompensationPostApi,
+    teacherCompensationDeleteApi,
+    subjectCost
 }

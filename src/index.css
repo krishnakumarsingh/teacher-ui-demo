@@ -112,3 +112,31 @@ body {
 .old-timeline h5 [class^="svg-"]{
   color: #ccc;
 }
+
+.popover-time {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ccc6c0;
+  padding: 15px;
+  max-width: 220px;
+  border-radius: 5px;
+}
+.popover-time button {
+  margin: 7px;
+}
+.subjects > button,
+.subjects > button.btn.show,
+.subjects > button:hover,
+.subjects > button:active,
+.subjects > button:focus:not(:focus-visible) {
+  /* width: 100%; */
+  text-align: left;
+  background-color: transparent;
+  color: #000;
+  border-color: transparent;
+}
+
+.subject-name {
+  text-transform: uppercase;
+}

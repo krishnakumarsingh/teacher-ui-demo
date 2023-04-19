@@ -1,16 +1,10 @@
 import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
 import React, { useState } from 'react';
-// import { setBackgroundColor } from './helper';
-
+import Button from 'react-bootstrap/Button';
 
 const TimeTableRow = ({ id, time, startRange, icon, title, type, sessionName, sessionTime, edit, refresh, status, dateStatus, costPerHour }) => {
     const [expend, setExpend] = useState(false);
-    const deleteItem = async () => {
-        const data = axios.delete(`http://localhost:3001/teacher-compensation/${id}`);
-        refresh();
-    }
     const costPerSession = (totalTime) => Math.floor((costPerHour / 60) * totalTime);
     return (
         <div className="time-table-row mb-4" onClick={() => setExpend(!expend)}>

@@ -4,10 +4,15 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Alert from 'react-bootstrap/Alert';
 import Moment from 'moment';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { teacherCompensationPostApi, subjectCost } from './helper';
+
 const FormComponent = ({ submit, refresh }) => {
     const [selectionRange, setSelectionRange] = useState("single");
     const [title, setTitle] = useState("");
-    const [startRange, setStartRange] = useState("");
+    const [sessionDate, setSessionDate] = useState("");
     const [endRange, setEndRange] = useState("");
     const [time, setTime] = useState("");
     const [type, setType] = useState("");
@@ -16,48 +21,46 @@ const FormComponent = ({ submit, refresh }) => {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [show, setShow] = useState(true);
+    const [subjects, setSubjects] = useState([]);
+    const [subject, setSubject] = useState([]);
 
     useEffect(() => {
         let today = Moment(new Date()).format('yyyy-MM-DD');
         let startDate = "2023-03-01";
         let endDate = (Number(today.split("-")[0]) + 1) + "-" + today.split("-")[1] + "-" + today.split("-")[2];
-        setStartRange(today);
+        setSessionDate(today);
         setEndRange(endDate);
         setTimeout(() => {
-            let elem = document.getElementById("startRange");
-            console.log(today);
+            let elem = document.getElementById("sessionDate");
             elem.setAttribute('min',startDate);
             elem.setAttribute('max',endDate);
             elem.setAttribute('value',today);
         }, 400);
+        setSubjects(["English", "Maths", "Science", "Social Sciences", "Physical Education", "Computer Basics", "Arts"]);
     }, []);
     const submitForm = () => {
         if (title &&
-            startRange &&
-            (selectionRange === "single" || endRange) &&
+            sessionDate &&
             time &&
-            type &&
+            // type &&
             sessionName &&
             sessionTime) {
-                
+            let subjectCosting = subjectCost(title);
+            
             let fieldsData = {
                 id: Math.random().toString(36).slice(2),
                 title,
-                startRange,
+                sessionDate,
                 time,
-                type,
+                // type,
                 sessionName,
                 sessionTime: sessionTime + "min",
-                ...(selectionRange === "range" && endRange),
+                status: "",
+                costPerHour: subjectCosting,
+                // ...(selectionRange === "range" && endRange),
             };
-            console.log(fieldsData);
-            const data = axios.post("http://localhost:3001/teacher-compensation", fieldsData, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const data = teacherCompensationPostApi(fieldsData);
             data.then((res) => {
-                console.log(res.data);
                 setError("");
                 setSuccess("Successfully created event.");
                 setShow(true);
@@ -65,7 +68,7 @@ const FormComponent = ({ submit, refresh }) => {
             })
         } else {
             setError("We are getting error during creating event.");
-            setSuccess("");
+            setSuccess(""); 
             setShow(true);
         }
     }
@@ -78,33 +81,35 @@ const FormComponent = ({ submit, refresh }) => {
                 <Alert.Heading>{success}</Alert.Heading>
             </Alert>}
             <Form.Group className="mb-3" controlId="title">
-                <Form.Label>Title *</Form.Label>
-                <Form.Control type="text" placeholder="Enter Title" onChange={(e) => setTitle(e.target.value)} />
+                <Row className="justify-content-md-center">
+                    <Col xs md="4">
+                        <Form.Label className='mt-2'>Title *</Form.Label>
+                    </Col>
+                    <Col xs md="8">
+                        <Dropdown bsPrefix="subjects" variant="light">
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                Subjects
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {subjects.map((val, index) => <Dropdown.Item key={val} active={val.split(" ").join("-").toLowerCase() === title} href={`#/${val.split(" ").join("-").toLowerCase()}`} name={val.split(" ").join("-").toLowerCase()} onClick={(e) => setTitle(e.target.name)}>{val}</Dropdown.Item>)}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Col>
+                </Row>
+                <Form.Label className='mt-2 subject-name'>{title.length > 0 ? title.split("-").join(" ") : "--"}</Form.Label>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="selectionRange">
+            {/* <Form.Group className="mb-3" controlId="selectionRange">
                 <Form.Check type="checkbox" label="Single Day" value="single" checked={selectionRange === "single"} onChange={() => setSelectionRange("single")} />
                 <Form.Check type="checkbox" label="Range" value="range" checked={selectionRange !== "single"} onChange={() => setSelectionRange("range")} />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="startRange">
+            </Form.Group> */}
+            <Form.Group className="mb-3" controlId="sessionDate">
                 <Form.Label>{selectionRange === "range" && "Start"} Date *</Form.Label>
-                <Form.Control type="date" placeholder="Date" defaultValue={startRange} onChange={(e) => setStartRange(e.target.value)} />
+                <Form.Control type="date" placeholder="Date" defaultValue={sessionDate} onChange={(e) => setSessionDate(e.target.value)} />
             </Form.Group>
-            {selectionRange === "range" && <Form.Group className="mb-3" controlId="endRange">
-                <Form.Label>End Date *</Form.Label>
-                <Form.Control type="date" placeholder="Date" defaultValue={endRange} onChange={(e) => setEndRange(e.target.value)} />
-            </Form.Group>}
 
             <Form.Group className="mb-3" controlId="time">
                 <Form.Label>Time *</Form.Label>
                 <Form.Control type="time" placeholder="Time" onChange={(e) => setTime(e.target.value)} />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="type">
-                <Form.Label>Type *</Form.Label>
-                <Form.Control type="text" placeholder="Enter Type" onChange={(e) => setType(e.target.value)} />
-                <Form.Text className="text-muted">
-                    We'll never share your email with anyone else.
-                </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="sessionName">
