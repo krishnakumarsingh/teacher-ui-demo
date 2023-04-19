@@ -18,12 +18,27 @@ const TeacherCompensation = () => {
     const [filterOpen, setFilterOpen] = useState(false);
     const [totalCost, setTotalCost] = useState(0);
     const [complitionPercentage, setComplitionPercentage] = useState(0);
+    const [popoverOpen, setPopoverOver] = useState(false);
 
     const handleClose = () => setAddTimeTable(false);
     const handleSave = () => console.log("Save");
 
     useEffect(() => {
         getPostData();
+        var currentTime = Date.now();
+        var startingTime = new Date("20-04-2023 02:48");
+        var endingTime = new Date("20-04-2023 03:30");
+
+        setTimeout(yourfunc, startingTime - currentTime)
+        function yourfunc () { 
+            // Your code 
+            const delay = 15 * 60 * 1000; // 15 minutes 
+            // Make sure that your next method  
+            // call doesn't exceed the ending time 
+            console.log("Hello");
+            if ( Date.now() + delay < endingTime ) 
+                setTimeout( yourfunc, delay); 
+        }
     }, []);
 
     const handleSubmit = (e) => {
@@ -51,12 +66,16 @@ const TeacherCompensation = () => {
                 const hours = currentDate.getHours();
                 const itemMinutes = item.time.split(":")[1];
                 const itemHours = item.time.split(":")[0];
+                if (filterValue === "today" && item.sessionDate === today) return true;
+                if (filterValue === "feature" && item.sessionDate > today) return true;
+                if (filterValue === "currentMonth" && item.sessionDate > today) return true;
                 if (item.sessionDate === today) {
-                    if (item.sessionDate === today && Number(itemHours) >= hours && Number(itemMinutes) >= minutes) {
+                    if (Number(itemHours) >= hours && Number(itemMinutes) >= minutes) {
                         return true;
                     }
+                } else if(filterValue === "all") {
+                    return item.sessionDate > today
                 }
-                return item.sessionDate > today
             }));
             setOldPost(currentData.filter((item) => {
                 const currentDate = new Date();
@@ -64,10 +83,14 @@ const TeacherCompensation = () => {
                 const hours = currentDate.getHours();
                 const itemMinutes = item.time.split(":")[1];
                 const itemHours = item.time.split(":")[0];
+                if (filterValue === "today" && item.sessionDate === today) return true;
+                if (filterValue === "feature" && item.sessionDate === today) return false;
+                if (filterValue === "currentMonth" && item.sessionDate > today) return true;
                 if (item.sessionDate === today && Number(itemHours) < hours && Number(itemMinutes) < minutes) {
                     return true;
+                } else if(filterValue === "all") {
+                    return item.sessionDate < today;
                 }
-                return item.sessionDate < today
             }));
         });
     }
@@ -89,7 +112,9 @@ const TeacherCompensation = () => {
     const edit = () => {
         console.log("edit");
     }
-
+    useEffect(() => {
+        getPostData();
+    }, [filterValue]);
     const VariantsExample = () => {
         return (
             <>
@@ -111,7 +136,7 @@ const TeacherCompensation = () => {
     }
     return (
         <>
-            <div className="teacher-compensation">{console.log(post)}
+            <div className="teacher-compensation">
                 <div className="container">
                     <div className="row">
                         <h2>Good morning, Monica</h2>
@@ -163,7 +188,7 @@ const TeacherCompensation = () => {
                         </div>
                     </div>
                 </div>
-                <TimeTablePopup />
+                {popoverOpen && <TimeTablePopup />}
             </div>
         </>
     );
