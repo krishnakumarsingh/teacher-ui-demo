@@ -22,6 +22,7 @@ const FormComponent = ({ submit, refresh }) => {
     const [success, setSuccess] = useState("");
     const [show, setShow] = useState(true);
     const [subjects, setSubjects] = useState([]);
+    const [subOption, setSubOption] = useState([]);
     const [subject, setSubject] = useState([]);
 
     useEffect(() => {
@@ -37,6 +38,7 @@ const FormComponent = ({ submit, refresh }) => {
             elem.setAttribute('value',today);
         }, 400);
         setSubjects(["English", "Maths", "Science", "Social Sciences", "Physical Education", "Computer Basics", "Arts"]);
+        setSubOption(["Leave"]);
     }, []);
     const submitForm = () => {
         if (title &&
@@ -92,6 +94,8 @@ const FormComponent = ({ submit, refresh }) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {subjects.map((val, index) => <Dropdown.Item key={val} active={val.split(" ").join("-").toLowerCase() === title} href={`#/${val.split(" ").join("-").toLowerCase()}`} name={val.split(" ").join("-").toLowerCase()} onClick={(e) => setTitle(e.target.name)}>{val}</Dropdown.Item>)}
+                                <Dropdown.Divider />
+                                {subOption.map((val, index) => <Dropdown.Item key={val} active={val.split(" ").join("-").toLowerCase() === title} href={`#/${val.split(" ").join("-").toLowerCase()}`} name={val.split(" ").join("-").toLowerCase()} onClick={(e) => setTitle(e.target.name)}>{val}</Dropdown.Item>)}
                             </Dropdown.Menu>
                         </Dropdown>
                     </Col>

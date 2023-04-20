@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 
-const TimeTableRow = ({ id, time, startRange, icon, title, type, sessionName, sessionTime, edit, refresh, status, dateStatus, costPerHour }) => {
+const TimeTableRow = ({ id, time, sessionDate, icon, title, type, sessionName, sessionTime, edit, refresh, status, dateStatus, costPerHour }) => {
     const [expend, setExpend] = useState(false);
     const costPerSession = (totalTime) => Math.floor((costPerHour / 60) * totalTime);
     return (
@@ -16,8 +16,8 @@ const TimeTableRow = ({ id, time, startRange, icon, title, type, sessionName, se
                 </div>
                 <div className="col-md-5">
                     <div className="card-body p-0">
-                        <h5 className="card-title m-0">{title}</h5>
-                        <p className="card-text"><small className="text-muted">{type}</small></p>
+                        <h5 className="card-title m-0">{title.toUpperCase()}</h5>
+                        <p className="card-text"><small className="text-muted">{type.toUpperCase()}</small></p>
                     </div>
                 </div>
                 <div className='col-md-2 text-end'>
@@ -36,7 +36,7 @@ const TimeTableRow = ({ id, time, startRange, icon, title, type, sessionName, se
                     <div className='col-md-4 p-2'><dt>Status: </dt><dl>{status ? status : "NA"}</dl></div>
                     <div className='col-md-4 p-2'><dt>Duration: </dt><dl>{sessionTime}</dl></div>
                     <div className='col-md-4 p-2'><dt>Session Name: </dt><dl>{sessionName}</dl></div>
-                    <div className='col-md-4 p-2'><dt>Date: </dt><dl>{startRange}</dl></div>
+                    <div className='col-md-4 p-2'><dt>Date: </dt><dl>{sessionDate}</dl></div>
                     <div className='col-md-4 p-2'><dt>Time: </dt><dl>{time}</dl></div>
                     <div className='col-md-4 p-2'><dt>cost Per Hour: </dt><dl>{costPerHour}</dl></div>
                     <div className='col-md-4 p-2'><dt>Total cost: </dt><dl>{costPerSession(sessionTime)}</dl></div>

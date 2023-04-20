@@ -68,6 +68,7 @@ const TeacherCompensation = () => {
                 const itemHours = item.time.split(":")[0];
                 if (filterValue === "today" && item.sessionDate === today) return true;
                 if (filterValue === "feature" && item.sessionDate > today) return true;
+                if (filterValue === "leave" && item.title === "leave") return true;
                 if (filterValue === "currentMonth" && item.sessionDate > today) return true;
                 if (item.sessionDate === today) {
                     if (Number(itemHours) >= hours && Number(itemMinutes) >= minutes) {
@@ -86,6 +87,7 @@ const TeacherCompensation = () => {
                 if (filterValue === "today" && item.sessionDate === today) return true;
                 if (filterValue === "feature" && item.sessionDate === today) return false;
                 if (filterValue === "currentMonth" && item.sessionDate > today) return true;
+                if (filterValue === "leave" && item.title !== "leave") return false;
                 if (item.sessionDate === today && Number(itemHours) < hours && Number(itemMinutes) < minutes) {
                     return true;
                 } else if(filterValue === "all") {
@@ -105,7 +107,7 @@ const TeacherCompensation = () => {
                     totalPercentage = totalPercentage + 1;
                 }
             });
-            oldPost.length && setComplitionPercentage((100 * totalPercentage) / oldPost.length);
+            oldPost.length && setComplitionPercentage(Math.floor((100 * totalPercentage) / oldPost.length));
             setTotalCost(currentValue);
         }
     }, [post]);
@@ -123,11 +125,12 @@ const TeacherCompensation = () => {
                     key={"Secondary"}
                     id={`dropdown-variants-${"Secondary"}`}
                     variant={"Secondary".toLowerCase()}
-                    title={"Secondary"}
+                    title={(filterValue && filterValue.toUpperCase()) || "Secondary"}
                 >
                     <Dropdown.Item eventKey="1" onClick={() => setFilterValue("all")} active={filterValue === "all"}>Completed Session</Dropdown.Item>
                     <Dropdown.Item eventKey="2" onClick={() => setFilterValue("today")} active={filterValue === "today"}>Today Session</Dropdown.Item>
                     <Dropdown.Item eventKey="3" onClick={() => setFilterValue("feature")} active={filterValue === "feature"}>Feature Session</Dropdown.Item>
+                    <Dropdown.Item eventKey="3" onClick={() => setFilterValue("leave")} active={filterValue === "leave"}>Leave</Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item eventKey="4" onClick={() => setFilterValue("currentMonth")} active={filterValue === "currentMonth"}>Current Month Session</Dropdown.Item>
                 </DropdownButton>
@@ -139,18 +142,19 @@ const TeacherCompensation = () => {
             <div className="teacher-compensation">
                 <div className="container">
                     <div className="row">
-                        <h2>Good morning, Monica</h2>
+                        <h2>Good morning, Krishna</h2>
                         <div className="p-3 rounded bg-blue">
-                            <h5>Your have completed {complitionPercentage}% class so you have earn {totalCost}.</h5>
+                            <h5>Your have completed {complitionPercentage}% classes, so you have earn {totalCost} only.</h5>
                         </div>
                         <div className="col-md-8">
                             <div className="d-flex justify-content-between align-items-center">
                                 <h2>Session calender</h2>
                                 <VariantsExample />
                             </div>
-                            <div className="card mt-5 mb-5 border-0">
+                            {(post.length === 0 && oldPost.length === 0) ? <h5>No Data available.</h5> :
+                            <><div className="card mt-3 mb-5 border-0">
                                 <div className="card-body">
-                                    {post.length > 0 && <div className='new-timeline'>
+                                    {post.length > 0 ? <div className='new-timeline'>
                                         <div className="card mb-3 border-0">
                                             <div className="d-flex justify-content-between align-items-center mb-4">
                                                 <h3>Schedule</h3>
@@ -164,10 +168,10 @@ const TeacherCompensation = () => {
                                                 return <TimeTableBlock data={item} dateStatus="new" filterValue={filterValue} refresh={refresh} />
                                             })}
                                         </div>
-                                    </div>}
+                                    </div> : <h5>No Data available.</h5>}
                                 </div>
                             </div>
-                            {oldPost.length > 0 && <div className='old-timeline'>
+                            {oldPost.length > 0 ? <div className='old-timeline'>
                                 {oldPost && oldPost.map(item => {
                                     return (
                                         <div className="card mt-1 mb-2 border-0">
@@ -177,7 +181,8 @@ const TeacherCompensation = () => {
                                         </div>
                                     )
                                 })}
-                            </div>}
+                            </div> : <h5>No Data available.</h5>}</>
+}
                         </div>
                         <div className="col-md-4">
                             <div className="card mt-5 mb-5 border-0">
@@ -209,7 +214,7 @@ const TimeTableBlock = ({ data, edit, refresh, dateStatus, filterValue }) => {
     return (
         <div>
             <h5><FontAwesomeIcon icon={faCalendarDay} className="fa-1x" /> {formateDate(sessionDate)}
-                <span onClick={(event) => deleteItem(event, id)} style={{ width: "16px", height: "16px", display: "inline-block", float: "right" }}>
+                <span onClick={(event) => deleteItem(event, id)} style={{ width: "16px", height: "16px", display: "inline-block", float: "right", cursor: "pointer" }}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                         <path fill="#be1111" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" /></svg>
                 </span>
